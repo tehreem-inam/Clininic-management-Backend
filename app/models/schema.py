@@ -312,7 +312,7 @@ class Medicine(AuditMixin, Base):
     pack_size = Column(String(50), nullable=True)
     default_price = Column(Numeric(12, 2), nullable=True, default=0.0)
     controlled = Column(Boolean, default=False)
-    metadata = Column(JSONB, nullable=True)
+    metadata_json = Column(JSONB, nullable=True)
 
 
 class MedicineRequest(AuditMixin, Base):
