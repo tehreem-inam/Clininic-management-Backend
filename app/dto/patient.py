@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime , date , time
 
@@ -20,8 +20,7 @@ class PatientResponse(PatientBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 class PatientVisitItem(BaseModel):
     appointment_id: int
     doctor_id: int
@@ -31,8 +30,7 @@ class PatientVisitItem(BaseModel):
     status: str
     reason: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PatientHistoryResponse(BaseModel):

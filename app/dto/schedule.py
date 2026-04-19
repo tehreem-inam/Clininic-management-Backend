@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import time, date
 
@@ -26,8 +26,7 @@ class AvailabilityRead(AvailabilityBase):
     doctor_id: int
     clinic_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SlotsQuery(BaseModel):
     date: str  # YYYY-MM-DD
