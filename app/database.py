@@ -2,17 +2,29 @@
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
-    create_async_engine
+    create_async_engine,
 )
-from sqlalchemy.orm import sessionmaker , declarative_base
+from sqlalchemy import MetaData
+from sqlalchemy.orm import sessionmaker, declarative_base
 from app.settings import settings
+
+# Naming convention for deterministic constraint/index names (recommended)
+naming_convention = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+
+metadata = MetaData(naming_convention=naming_convention)
 
 DATABASE_URL = settings.DATABASE_URL
 
 engine = create_async_engine(
     DATABASE_URL,
     echo=True,
-    future=True
+    future=True,
 )
 
 async_session_factory = sessionmaker(
@@ -20,9 +32,11 @@ async_session_factory = sessionmaker(
     autocommit=False,
     autoflush=False,
     class_=AsyncSession,
-    expire_on_commit=False
+    expire_on_commit=False,
 )
-Base = declarative_base()
+
+# Declarative base with metadata that includes naming_convention
+Base = declarative_base(metadata=metadata)
 
 
 async def get_db():
