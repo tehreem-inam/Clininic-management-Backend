@@ -17,21 +17,26 @@ help:
 	@echo "  make run                    # Start uvicorn on 0.0.0.0:8000 (dev)"
 	@echo "  make shell                  # Open python shell using venv"
 
+
+# load .env into environment when present, then run the command
+ENV_LOAD := set -a; [ -f .env ] && . .env; set +a;
+
 alembic-rev:
-	$(ALEMBIC) -c alembic.ini revision --autogenerate -m $(m)
+	$(ENV_LOAD) $(ALEMBIC) -c alembic.ini revision --autogenerate -m $(m)
 
 alembic-upgrade:
-	$(ALEMBIC) -c alembic.ini upgrade head
+	$(ENV_LOAD) $(ALEMBIC) -c alembic.ini upgrade head
 
 alembic-stamp:
-	$(ALEMBIC) -c alembic.ini stamp head
+	$(ENV_LOAD) $(ALEMBIC) -c alembic.ini stamp head
 
 migrate: alembic-rev alembic-upgrade
 
 local-db-upgrade: alembic-upgrade
 
+
 run:
-	$(UVICORN) app.main:app --reload --host 0.0.0.0 --port 8000
+	$(ENV_LOAD) $(UVICORN) app.main:app --reload --host 0.0.0.0 --port 8000
 
 shell:
-	$(PY)
+	$(ENV_LOAD) $(PY)

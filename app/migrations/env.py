@@ -18,7 +18,13 @@ load_dotenv()
 # If DATABASE_URL present in env, set it as the sqlalchemy.url for Alembic
 env_db_url = os.environ.get("DATABASE_URL")
 if env_db_url:
-    config.set_main_option("sqlalchemy.url", env_db_url)
+    # Alembic's autogenerate and offline/online APIs expect a sync DBAPI.
+    # If the project uses an async driver like asyncpg, replace it with
+    # a sync driver for migration operations (psycopg). This avoids
+    # 'greenlet_spawn has not been called' errors when Alembic tries to
+    # open a synchronous connection.
+    sync_db_url = env_db_url.replace("+asyncpg", "+psycopg")
+    config.set_main_option("sqlalchemy.url", sync_db_url)
 
 # Interpret the config file for Python logging.
 fileConfig(config.config_file_name)
